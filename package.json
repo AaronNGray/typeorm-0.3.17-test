@@ -1,0 +1,27 @@
+{
+  "name": "typeorm-0.3.17-test",
+  "version": "0.0.1",
+  "description": "Test TypeORM 0.3.17",
+  "main": "index.js",
+  "scripts": {
+    "migration:create": "ts-node node_modules/typeorm/cli.js migration:create src/migrations/migrations",
+    "migration:generate": "ts-node node_modules/typeorm/cli.js migration:generate --dataSource ./datasource.ts src/migrations/migrations",
+    "migration:run": "ts-node node_modules/typeorm/cli.js --dataSource ./datasource.ts migration:run",
+    "migration:clear": "rimraf src/migrations/*.*",
+    "migration:revert": "ts-node node_modules/typeorm/cli.js --dataSource ./datasource.ts migration:revert",
+    "schema:drop": "ts-node node_modules/typeorm/cli.js schema:drop --dataSource ./datasource.ts",
+    "db:make": "npm run migration:create && npm run migration:generate && npm run migration:run",
+    "seed:run": "ts-node ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d ./datasource.ts ./src/seeds/*.ts",
+    "seed:config": "ts-node ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js config -d ./datasource.ts ./src/seeds/*.ts",
+    "seed": " ts-node src/seed.ts"
+  },
+  "author": "AaronNGray",
+  "license": "ISC",
+  "dependencies": {
+    "@faker-js/faker": "^8.3.1",
+    "sqlite3": "^5.1.6",
+    "ts-node": "^10.9.2",
+    "typeorm": "^0.3.17",
+    "typescript": "^5.3.3"
+  }
+}
