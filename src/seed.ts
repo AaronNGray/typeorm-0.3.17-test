@@ -7,11 +7,11 @@ import Comment from './entities/Comment';
 import { faker } from '@faker-js/faker';
 
 
-function callFunction<R>(func:(args:any, previousReturn:R) => R, n:number, args?:any):R[] {
+async function callFunction<R>(func:(args:any, previousReturn:R) => Promise<R>, n:number, args?:any):Promise<R[]> {
     var returnValues:R[] = [];
 
     for (let i = 1; i <= n; i++)
-        returnValues.push(func(args, returnValues[-1]));
+        returnValues.push(await func(args, returnValues[-1]));
 
     return returnValues;
 }
@@ -27,7 +27,7 @@ async function callPromiseFunction<R>(func:(args:any, previousReturn:R) => Promi
     return returnValues;
 }
 
-function createUser():User {
+async function createUser():Promise<User> {
     const gender = faker.person.sex();
 
     const firstName = faker.person.firstName(gender == "male" ? "male" : "female");
@@ -63,7 +63,7 @@ function createUser():User {
 }
 
 async function generateUsers():Promise<void> {
-    const users: User[] = <User[]> callFunction<User>(createUser, 100);
+    const users: User[] = <User[]> await callFunction<User>(createUser, 100);
 
     await AppDataSource.createEntityManager().save<User>(users);
 }
@@ -81,10 +81,10 @@ async function selectUserAtRandom():Promise<User | null> {
 }
 
 
-function createComment(post:Post, previousComment:Comment):Comment {
+async function createComment(post:Post, previousComment:Comment):Promise<Comment> {
     const comment:Comment = new Comment();
 
-    const user = faker.datatype.boolean() ? faker.datatype.boolean() ? (previousComment?.user || post.user) : post.user : selectUserAtRandom();
+    const user = faker.datatype.boolean() ? faker.datatype.boolean() ? (previousComment?.user || post.user) : post.user : await selectUserAtRandom();
     const text = faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 }));
     const date = faker.date.between({ from: post.date, to: Date.now() });
 
@@ -101,7 +101,7 @@ function createComment(post:Post, previousComment:Comment):Comment {
 }
 
 async function createComments(post:Post):Promise<Comment[]> {
-    const comments: Comment[] = <Comment[]> callFunction<Comment>(createComment, faker.datatype.boolean() ? faker.number.int({ min: 0, max: 25 }) : 0, post);
+    const comments: Comment[] = <Comment[]> await callFunction<Comment>(createComment, faker.datatype.boolean() ? faker.number.int({ min: 0, max: 25 }) : 0, post);
 
 //    console.log("comments = ", comments);
 //    console.log("test");
